@@ -61,6 +61,7 @@ public class ModularChests extends JavaPlugin implements Listener
         boolean mustOpen;
     }
 
+    //Sorts the storage by Item Name
     private class SortByName implements Comparator<ItemStack>
     {
         @Override
@@ -179,9 +180,11 @@ public class ModularChests extends JavaPlugin implements Listener
         saveConfig();
     }
 
+    //When the Player clicks on the multi-block
     @EventHandler
     public void onBlockClick(PlayerInteractEvent e)
     {
+        //Right click on a block
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getHand() == EquipmentSlot.HAND)
         {
             CoordinatePair bounds = findBounds(e.getClickedBlock().getLocation());
@@ -195,6 +198,7 @@ public class ModularChests extends JavaPlugin implements Listener
                 }
                 else
                 {
+                    //Loading the "Chest" and sorting each item
                     List<ItemStack> items = getContainedItems(bounds);
                     Collections.sort(items, new SortByName());
                     int chestCount = countStorageSpace(bounds);
@@ -235,6 +239,7 @@ public class ModularChests extends JavaPlugin implements Listener
         }
     }
 
+    //Saving the inventory when Player closes "Chest"
     @EventHandler
     public void onCloseInventory(InventoryCloseEvent e)
     {
@@ -259,6 +264,7 @@ public class ModularChests extends JavaPlugin implements Listener
         }
     }
 
+    //Inventory shiz (basic getting the chest shape and storage data)
     @EventHandler
     public void onInventoryClick(InventoryClickEvent e)
     {
@@ -298,6 +304,7 @@ public class ModularChests extends JavaPlugin implements Listener
         }
     }
 
+    // Storage data (AGAIN)
     @EventHandler
     public void onBlockBreak(final BlockBreakEvent e)
     {
@@ -309,6 +316,7 @@ public class ModularChests extends JavaPlugin implements Listener
             }
     }
 
+    //Nothing on piston extend
     @EventHandler
     public void onPistonMove(BlockPistonExtendEvent e)
     {
@@ -319,6 +327,7 @@ public class ModularChests extends JavaPlugin implements Listener
             }
     }
 
+    //Breaking on Piston retract
     @EventHandler
     public void onPistonMove(BlockPistonRetractEvent e)
     {
@@ -329,6 +338,7 @@ public class ModularChests extends JavaPlugin implements Listener
             }
     }
 
+    //Saving items in chests on explosion.
     @EventHandler
     public void onBlockExplode(final BlockExplodeEvent e)
     {
@@ -339,6 +349,7 @@ public class ModularChests extends JavaPlugin implements Listener
             }
     }
 
+    //Saving items in ItemStack
     private List<ItemStack> getAllContents(Inventory[] inv)
     {
         List<ItemStack> items = new ArrayList<ItemStack>();
@@ -352,6 +363,7 @@ public class ModularChests extends JavaPlugin implements Listener
         return items;
     }
 
+    //Chest is inside
     private boolean isInside(CoordinatePair p, Location l)
     {
         return l.getBlockX() >= p.start.getBlockX() &&
@@ -362,6 +374,7 @@ public class ModularChests extends JavaPlugin implements Listener
                 l.getBlockZ() <= p.end.getBlockZ();
     }
 
+    //Adding the Navigation
     private void fillControls(Inventory inv)
     {
         int backPos = inv.getSize() - 9;
@@ -372,6 +385,7 @@ public class ModularChests extends JavaPlugin implements Listener
             inv.setItem(i, whiteFiller.clone());
     }
 
+    //Counting how much storage is available by means of chests
     private int countStorageSpace(CoordinatePair pair)
     {
         int res = (pair.end.getBlockX() - pair.start.getBlockX() - 1);
@@ -380,11 +394,13 @@ public class ModularChests extends JavaPlugin implements Listener
         return res;
     }
 
+    //Checking if the modular storage is made of the set blocks
     private boolean isBoxMaterial(Material mat)
     {
         return mat == surface || mat == surfaceSide || mat == filler || mat == edge;
     }
 
+    //Finding the edges of the modular storage (Glass Block)
     private CoordinatePair findBounds(Location loc)
     {
         Material sel = loc.getBlock().getType();
@@ -421,7 +437,7 @@ public class ModularChests extends JavaPlugin implements Listener
                 sel = w.getBlockAt(x, y, z2++).getType();
             return new CoordinatePair(new Location(w, x1 + 2, y1 + 2, z1 + 2), new Location(w, x2 - 2, y2 - 2, z2 - 2));
         }
-
+        //Finding the edges of the modular storage (Glass Pane)
         if (isBoxMaterial(surfaceSide))
         {
             int x = loc.getBlockX();
@@ -454,7 +470,7 @@ public class ModularChests extends JavaPlugin implements Listener
                 sel = w.getBlockAt(x, y, z2++).getType();
             return new CoordinatePair(new Location(w, x1 + 2, y1 + 2, z1 + 2), new Location(w, x2 - 2, y2 - 2, z2 - 2));
         }
-
+        //Finding the edges of the modular storage (Smooth Quartz)
         if (isBoxMaterial(edge))
         {
             int x = loc.getBlockX();
@@ -487,6 +503,7 @@ public class ModularChests extends JavaPlugin implements Listener
                 sel = w.getBlockAt(x, y, z2++).getType();
             return new CoordinatePair(new Location(w, x1 + 2, y1 + 2, z1 + 2), new Location(w, x2 - 2, y2 - 2, z2 - 2));
         }
+        //Finding the edges of the modular storage (Chests)
         if (isBoxMaterial(filler))
         {
             int x = loc.getBlockX();
@@ -523,6 +540,7 @@ public class ModularChests extends JavaPlugin implements Listener
         return null;
     }
 
+    //Checking the structure if it is valid. (NOT going into depth, please don't break this!)
     private boolean checkStructure(Location start, Location end)
     {
         World w = start.getWorld();
@@ -568,6 +586,7 @@ public class ModularChests extends JavaPlugin implements Listener
         return true;
     }
 
+    //Checking for valid bounds by config
     private boolean isValidBounds(CoordinatePair pair)
     {
         int dx = pair.end.getBlockX() - pair.start.getBlockX() + 1;
@@ -576,6 +595,7 @@ public class ModularChests extends JavaPlugin implements Listener
         return dx >= minSize && dx <= maxSize && dy >= minSize && dy <= maxSize && dz >= minSize && dz <= maxSize;
     }
 
+    //Getting the saved items
     private List<ItemStack> getContainedItems(CoordinatePair pair)
     {
         List<ItemStack> items = new ArrayList<ItemStack>();
@@ -595,6 +615,7 @@ public class ModularChests extends JavaPlugin implements Listener
         return items;
     }
 
+    //Saving the Items
     private List<ItemStack> putItemsInStorage(CoordinatePair pair, List<ItemStack> items)
     {
         Chest chest;
@@ -621,6 +642,7 @@ public class ModularChests extends JavaPlugin implements Listener
                                 ItemStack item = items.get(index);
                                 if (item != null)
                                 {
+                                    //Saving happens here
                                     inventory.addItem(item);
                                     itemsRemain.remove(item);
                                 }
@@ -636,6 +658,7 @@ public class ModularChests extends JavaPlugin implements Listener
         return itemsRemain;
     }
 
+    //Checking if only one person is in (Possible duping otherwise)
     private boolean isStorageInUse(CoordinatePair bounds)
     {
         for (StorageData sd: storageData.values())
@@ -647,6 +670,6 @@ public class ModularChests extends JavaPlugin implements Listener
     //Checks if material is Chest
     private boolean isChest(Material mat)
     {
-        return mat == Material.CHEST || mat == Material.TRAPPED_CHEST;
+        return mat == Material.CHEST || mat == Material.TRAPPED_CHEST || mat == Material.SHULKER_BOX;
     }
 }
