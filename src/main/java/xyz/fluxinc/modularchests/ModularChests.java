@@ -31,6 +31,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import xyz.fluxinc.fluxcore.FluxCore;
+import xyz.fluxinc.fluxcore.security.BlockAccessController;
 
 public class ModularChests extends JavaPlugin implements Listener
 {
@@ -96,9 +98,14 @@ public class ModularChests extends JavaPlugin implements Listener
     private static int inventoryRows = 4;
     private static int itemCount;
 
+    private BlockAccessController blockAccessController;
+
     @Override
     public void onEnable()
     {
+        FluxCore fluxCore = (FluxCore) getServer().getPluginManager().getPlugin("FluxCore");
+        if (fluxCore == null) { getServer().getPluginManager().disablePlugin(this); }
+        blockAccessController = fluxCore.getBlockAccessController();
         getServer().getPluginManager().registerEvents(this, this);
         loadConfig();
         initFillers();
@@ -184,12 +191,15 @@ public class ModularChests extends JavaPlugin implements Listener
     @EventHandler
     public void onBlockClick(PlayerInteractEvent e)
     {
+        if (e.getPlayer().isSneaking()) { return; }
+        if (blockAccessController == null || !blockAccessController.checkBlockAccess(e.getPlayer(), e.getClickedBlock().getLocation())) { return; }
         //Right click on a block
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getHand() == EquipmentSlot.HAND)
         {
             CoordinatePair bounds = findBounds(e.getClickedBlock().getLocation());
             if (bounds != null && isValidBounds(bounds) && checkStructure(bounds.start, bounds.end))
             {
+                if (!blockAccessController.checkBlockAccess(e.getPlayer(), bounds.start) || !blockAccessController.checkBlockAccess(e.getPlayer(), bounds.end)) { return; }
                 e.setCancelled(true);
                 if (isStorageInUse(bounds))
                 {
