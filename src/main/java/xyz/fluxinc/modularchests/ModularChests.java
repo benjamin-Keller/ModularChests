@@ -6,7 +6,6 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
-import com.sun.tools.javac.comp.Todo;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
