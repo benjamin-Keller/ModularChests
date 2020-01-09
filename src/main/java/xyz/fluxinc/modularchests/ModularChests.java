@@ -1,41 +1,33 @@
 package xyz.fluxinc.modularchests;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Chest;
 import org.bukkit.entity.Player;
-
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockExplodeEvent;
-import org.bukkit.event.block.BlockPistonExtendEvent;
-import org.bukkit.event.block.BlockPistonRetractEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
 import org.bukkit.plugin.java.JavaPlugin;
 import xyz.fluxinc.fluxcore.FluxCore;
 import xyz.fluxinc.fluxcore.security.BlockAccessController;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+
 public class ModularChests extends JavaPlugin implements Listener
 {
-    private class CoordinatePair
+    private static class CoordinatePair
     {
         Location start;
         Location end;
@@ -54,7 +46,7 @@ public class ModularChests extends JavaPlugin implements Listener
     }
 
     //Gets the Storage Data
-    private class StorageData
+    private static class StorageData
     {
         CoordinatePair bounds;
         Inventory[] inventories;
@@ -63,7 +55,7 @@ public class ModularChests extends JavaPlugin implements Listener
     }
 
     //Sorts the storage by Item Name
-    private class SortByName implements Comparator<ItemStack>
+    private static class SortByName implements Comparator<ItemStack>
     {
         @Override
         public int compare(ItemStack item1, ItemStack item2)
@@ -83,7 +75,7 @@ public class ModularChests extends JavaPlugin implements Listener
     private static int minSize = 4;
     private static int maxSize = 20;
 
-    private static HashMap<Player, StorageData> storageData = new HashMap<Player, StorageData>();
+    private static HashMap<Player, StorageData> storageData = new HashMap<>();
 
     private static ItemStack arrowBack;
     private static ItemStack arrowNext;
@@ -191,6 +183,7 @@ public class ModularChests extends JavaPlugin implements Listener
     public void onBlockClick(PlayerInteractEvent e)
     {
         if (e.getPlayer().isSneaking()) { return; }
+        if (e.getClickedBlock() == null) { return; }
         if (blockAccessController == null || !blockAccessController.checkBlockAccess(e.getPlayer(), e.getClickedBlock().getLocation())) { return; }
         //Right click on a block
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getHand() == EquipmentSlot.HAND)
@@ -203,13 +196,12 @@ public class ModularChests extends JavaPlugin implements Listener
                 if (isStorageInUse(bounds))
                 {
                     e.getPlayer().sendMessage(inUsage);
-                    return;
                 }
                 else
                 {
                     //Loading the "Chest" and sorting each item
                     List<ItemStack> items = getContainedItems(bounds);
-                    Collections.sort(items, new SortByName());
+                    items.sort(new SortByName());
                     int chestCount = countStorageSpace(bounds);
                     int totalItemCount = chestCount * 27;
                     Inventory[] inv = new Inventory[(int) Math.ceil((float) totalItemCount / itemCount)];
@@ -361,7 +353,7 @@ public class ModularChests extends JavaPlugin implements Listener
     //Saving items in ItemStack
     private List<ItemStack> getAllContents(Inventory[] inv)
     {
-        List<ItemStack> items = new ArrayList<ItemStack>();
+        List<ItemStack> items = new ArrayList<>();
         for (Inventory i: inv)
             for (int j = 0; j < i.getSize() - 9; j++)
             {
@@ -507,7 +499,7 @@ public class ModularChests extends JavaPlugin implements Listener
     //Getting the saved items
     private List<ItemStack> getContainedItems(CoordinatePair pair)
     {
-        List<ItemStack> items = new ArrayList<ItemStack>();
+        List<ItemStack> items = new ArrayList<>();
         World w = pair.start.getWorld();
         Chest chest;
         Inventory inventory;
@@ -533,8 +525,7 @@ public class ModularChests extends JavaPlugin implements Listener
         World w = pair.start.getWorld();
         int index = 0;
         boolean mustPut = items.size() > 0;
-        List<ItemStack> itemsRemain = new ArrayList<ItemStack>();
-        itemsRemain.addAll(items);
+        List<ItemStack> itemsRemain = new ArrayList<>(items);
         for (int x = pair.start.getBlockX() + 1; x < pair.end.getBlockX(); x++)
             for (int y = pair.start.getBlockY() + 1; y < pair.end.getBlockY(); y++)
                 for (int z = pair.start.getBlockZ() + 1; z < pair.end.getBlockZ(); z++)
