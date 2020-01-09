@@ -103,7 +103,7 @@ public class ModularChests extends JavaPlugin implements Listener
     public void onEnable()
     {
         FluxCore fluxCore = (FluxCore) getServer().getPluginManager().getPlugin("FluxCore");
-        if (fluxCore == null) { getServer().getPluginManager().disablePlugin(this); }
+        if (fluxCore == null) { getServer().getPluginManager().disablePlugin(this); return; }
         blockAccessController = fluxCore.getBlockAccessController();
         getServer().getPluginManager().registerEvents(this, this);
         loadConfig();
@@ -446,106 +446,6 @@ public class ModularChests extends JavaPlugin implements Listener
                 sel = w.getBlockAt(x, y, z2++).getType();
             return new CoordinatePair(new Location(w, x1 + 2, y1 + 2, z1 + 2), new Location(w, x2 - 2, y2 - 2, z2 - 2));
         }
-        //Finding the edges of the modular storage (Glass Pane)
-        if (isBoxMaterial(surfaceSide))
-        {
-            int x = loc.getBlockX();
-            int y = loc.getBlockY();
-            int z = loc.getBlockZ();
-
-            int x1 = x;
-            int x2 = x;
-            int y1 = y;
-            int y2 = y;
-            int z1 = z;
-            int z2 = z;
-
-            while(isBoxMaterial(sel))
-                sel = w.getBlockAt(x1--, y, z).getType();
-            sel = surfaceSide;
-            while(isBoxMaterial(sel))
-                sel = w.getBlockAt(x2++, y, z).getType();
-            sel = surfaceSide;
-            while(isBoxMaterial(sel))
-                sel = w.getBlockAt(x, y1--, z).getType();
-            sel = surfaceSide;
-            while(isBoxMaterial(sel))
-                sel = w.getBlockAt(x, y2++, z).getType();
-            sel = surfaceSide;
-            while(isBoxMaterial(sel))
-                sel = w.getBlockAt(x, y, z1--).getType();
-            sel = surfaceSide;
-            while(isBoxMaterial(sel))
-                sel = w.getBlockAt(x, y, z2++).getType();
-            return new CoordinatePair(new Location(w, x1 + 2, y1 + 2, z1 + 2), new Location(w, x2 - 2, y2 - 2, z2 - 2));
-        }
-        //Finding the edges of the modular storage (Smooth Quartz)
-        if (isBoxMaterial(edge))
-        {
-            int x = loc.getBlockX();
-            int y = loc.getBlockY();
-            int z = loc.getBlockZ();
-
-            int x1 = x;
-            int x2 = x;
-            int y1 = y;
-            int y2 = y;
-            int z1 = z;
-            int z2 = z;
-
-            while(isBoxMaterial(sel))
-                sel = w.getBlockAt(x1--, y, z).getType();
-            sel = edge;
-            while(isBoxMaterial(sel))
-                sel = w.getBlockAt(x2++, y, z).getType();
-            sel = edge;
-            while(isBoxMaterial(sel))
-                sel = w.getBlockAt(x, y1--, z).getType();
-            sel = edge;
-            while(isBoxMaterial(sel))
-                sel = w.getBlockAt(x, y2++, z).getType();
-            sel = edge;
-            while(isBoxMaterial(sel))
-                sel = w.getBlockAt(x, y, z1--).getType();
-            sel = edge;
-            while(isBoxMaterial(sel))
-                sel = w.getBlockAt(x, y, z2++).getType();
-            return new CoordinatePair(new Location(w, x1 + 2, y1 + 2, z1 + 2), new Location(w, x2 - 2, y2 - 2, z2 - 2));
-        }
-        //Finding the edges of the modular storage (Chests)
-        if (isBoxMaterial(filler))
-        {
-            int x = loc.getBlockX();
-            int y = loc.getBlockY();
-            int z = loc.getBlockZ();
-
-            int x1 = x;
-            int x2 = x;
-            int y1 = y;
-            int y2 = y;
-            int z1 = z;
-            int z2 = z;
-
-            while(isBoxMaterial(sel))
-                sel = w.getBlockAt(x1--, y, z).getType();
-            sel = filler;
-            while(isBoxMaterial(sel))
-                sel = w.getBlockAt(x2++, y, z).getType();
-            sel = filler;
-            while(isBoxMaterial(sel))
-                sel = w.getBlockAt(x, y1--, z).getType();
-            sel = filler;
-            while(isBoxMaterial(sel))
-                sel = w.getBlockAt(x, y2++, z).getType();
-            sel = filler;
-            while(isBoxMaterial(sel))
-                sel = w.getBlockAt(x, y, z1--).getType();
-            sel = filler;
-            while(isBoxMaterial(sel))
-                sel = w.getBlockAt(x, y, z2++).getType();
-            return new CoordinatePair(new Location(w, x1 + 2, y1 + 2, z1 + 2), new Location(w, x2 - 2, y2 - 2, z2 - 2));
-        }
-
         return null;
     }
 
